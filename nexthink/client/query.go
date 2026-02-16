@@ -1,0 +1,227 @@
+package client
+
+import (
+	"strconv"
+	"time"
+
+	"github.com/deploymenttheory/go-api-sdk-nexthink/nexthink/interfaces"
+)
+
+// QueryBuilder provides a fluent interface for building URL query parameters.
+// It offers type-safe methods for adding parameters and handles empty value filtering automatically.
+//
+// Example:
+//
+//	query := NewQueryBuilder().
+//	    AddString("name", "nexthink").
+//	    AddInt("limit", 100).
+//	    AddBool("active", true).
+//	    AddTime("created_after", time.Now().Add(-24*time.Hour))
+//
+//	params := query.Build()
+//	// params = {"name": "nexthink", "limit": "100", "active": "true", "created_after": "2026-02-12T..."}
+type QueryBuilder struct {
+	params map[string]string
+}
+
+// Ensure QueryBuilder implements the interface
+var _ interfaces.QueryBuilder = (*QueryBuilder)(nil)
+var _ interfaces.ServiceQueryBuilder = (*QueryBuilder)(nil)
+
+// NewQueryBuilder creates a new query builder instance with an empty parameter set.
+//
+// Returns:
+//   - *QueryBuilder: A new query builder ready to accept parameters
+//
+// Example:
+//
+//	qb := NewQueryBuilder()
+//	qb.AddString("search", "devices").AddInt("page", 1)
+func NewQueryBuilder() *QueryBuilder {
+	return &QueryBuilder{
+		params: make(map[string]string),
+	}
+}
+
+// AddString adds a string parameter if the value is not empty
+func (qb *QueryBuilder) AddString(key, value string) interfaces.QueryBuilder {
+	if value != "" {
+		qb.params[key] = value
+	}
+	return qb
+}
+
+// AddInt adds an integer parameter if the value is greater than 0
+func (qb *QueryBuilder) AddInt(key string, value int) interfaces.QueryBuilder {
+	if value > 0 {
+		qb.params[key] = strconv.Itoa(value)
+	}
+	return qb
+}
+
+// AddInt64 adds an int64 parameter if the value is greater than 0
+func (qb *QueryBuilder) AddInt64(key string, value int64) interfaces.QueryBuilder {
+	if value > 0 {
+		qb.params[key] = strconv.FormatInt(value, 10)
+	}
+	return qb
+}
+
+// AddBool adds a boolean parameter
+func (qb *QueryBuilder) AddBool(key string, value bool) interfaces.QueryBuilder {
+	qb.params[key] = strconv.FormatBool(value)
+	return qb
+}
+
+// AddTime adds a time parameter in RFC3339 format if the time is not zero
+func (qb *QueryBuilder) AddTime(key string, value time.Time) interfaces.QueryBuilder {
+	if !value.IsZero() {
+		qb.params[key] = value.Format(time.RFC3339)
+	}
+	return qb
+}
+
+// AddStringSlice adds a string slice parameter as comma-separated values
+func (qb *QueryBuilder) AddStringSlice(key string, values []string) interfaces.QueryBuilder {
+	if len(values) > 0 {
+		// Join multiple values with comma
+		result := ""
+		for i, v := range values {
+			if v != "" {
+				if i > 0 {
+					result += ","
+				}
+				result += v
+			}
+		}
+		if result != "" {
+			qb.params[key] = result
+		}
+	}
+	return qb
+}
+
+// AddIntSlice adds an integer slice parameter as comma-separated values
+func (qb *QueryBuilder) AddIntSlice(key string, values []int) interfaces.QueryBuilder {
+	if len(values) > 0 {
+		result := ""
+		for i, v := range values {
+			if i > 0 {
+				result += ","
+			}
+			result += strconv.Itoa(v)
+		}
+		qb.params[key] = result
+	}
+	return qb
+}
+
+// AddCustom adds a custom parameter with any value
+func (qb *QueryBuilder) AddCustom(key, value string) interfaces.QueryBuilder {
+	qb.params[key] = value
+	return qb
+}
+
+// AddIfNotEmpty adds a parameter only if the value is not empty
+func (qb *QueryBuilder) AddIfNotEmpty(key, value string) interfaces.QueryBuilder {
+	if value != "" {
+		qb.params[key] = value
+	}
+	return qb
+}
+
+// AddIfTrue adds a parameter only if the condition is true
+func (qb *QueryBuilder) AddIfTrue(condition bool, key, value string) interfaces.QueryBuilder {
+	if condition {
+		qb.params[key] = value
+	}
+	return qb
+}
+
+// Merge merges parameters from another query builder or map
+func (qb *QueryBuilder) Merge(other map[string]string) interfaces.QueryBuilder {
+	for k, v := range other {
+		qb.params[k] = v
+	}
+	return qb
+}
+
+// Remove removes a parameter
+func (qb *QueryBuilder) Remove(key string) interfaces.QueryBuilder {
+	delete(qb.params, key)
+	return qb
+}
+
+// Has checks if a parameter exists
+func (qb *QueryBuilder) Has(key string) bool {
+	_, exists := qb.params[key]
+	return exists
+}
+
+// Get retrieves a parameter value
+func (qb *QueryBuilder) Get(key string) string {
+	return qb.params[key]
+}
+
+// Build returns a copy of the query parameters as a map.
+// The returned map is a copy to prevent external modification of the builder's internal state.
+//
+// Returns:
+//   - map[string]string: Copy of all query parameters
+//
+// Example:
+//
+//	params := qb.AddString("name", "test").AddInt("limit", 50).Build()
+//	// params = {"name": "test", "limit": "50"}
+func (qb *QueryBuilder) Build() map[string]string {
+	// Return a copy to prevent external modification
+	result := make(map[string]string, len(qb.params))
+	for k, v := range qb.params {
+		result[k] = v
+	}
+	return result
+}
+
+// BuildString returns the query parameters as a URL-encoded string.
+// Parameters are joined with "&" in key=value format.
+//
+// Returns:
+//   - string: URL-encoded query string (e.g., "name=test&limit=50"), or empty string if no parameters
+//
+// Example:
+//
+//	queryString := qb.AddString("name", "test").AddInt("page", 1).BuildString()
+//	// queryString = "name=test&page=1"
+//	url := baseURL + "?" + queryString
+func (qb *QueryBuilder) BuildString() string {
+	if len(qb.params) == 0 {
+		return ""
+	}
+
+	result := ""
+	first := true
+	for k, v := range qb.params {
+		if !first {
+			result += "&"
+		}
+		result += k + "=" + v
+		first = false
+	}
+	return result
+}
+
+// Clear removes all parameters
+func (qb *QueryBuilder) Clear() interfaces.QueryBuilder {
+	qb.params = make(map[string]string)
+	return qb
+}
+
+// Count returns the number of parameters
+func (qb *QueryBuilder) Count() int {
+	return len(qb.params)
+}
+
+// IsEmpty returns true if no parameters are set
+func (qb *QueryBuilder) IsEmpty() bool {
+	return len(qb.params) == 0
+}
