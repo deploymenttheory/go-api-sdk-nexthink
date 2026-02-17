@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// ValidateExecutionRequestV1 validates an ExecutionRequestV1
-func ValidateExecutionRequestV1(req *ExecutionRequestV1) error {
+// ValidateTriggerWorkflowV1Request validates a TriggerWorkflowV1Request
+func ValidateTriggerWorkflowV1Request(req *TriggerWorkflowV1Request) error {
 	if req == nil {
 		return fmt.Errorf("execution request cannot be nil")
 	}
@@ -50,8 +50,8 @@ func ValidateExecutionRequestV1(req *ExecutionRequestV1) error {
 	return nil
 }
 
-// ValidateExecutionRequestV2 validates an ExecutionRequestV2
-func ValidateExecutionRequestV2(req *ExecutionRequestV2) error {
+// ValidateTriggerWorkflowV2Request validates a TriggerWorkflowV2Request
+func ValidateTriggerWorkflowV2Request(req *TriggerWorkflowV2Request) error {
 	if req == nil {
 		return fmt.Errorf("execution request cannot be nil")
 	}

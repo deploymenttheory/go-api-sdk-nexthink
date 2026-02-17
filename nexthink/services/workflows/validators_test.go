@@ -7,16 +7,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidateExecutionRequestV1(t *testing.T) {
+func TestValidateTriggerWorkflowV1Request(t *testing.T) {
 	tests := []struct {
 		name    string
-		req     *ExecutionRequestV1
+		req     *TriggerWorkflowV1Request
 		wantErr bool
 		errMsg  string
 	}{
 		{
 			name: "valid request with devices",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "#test_workflow",
 				Devices:    []string{"device-001"},
 			},
@@ -24,7 +24,7 @@ func TestValidateExecutionRequestV1(t *testing.T) {
 		},
 		{
 			name: "valid request with users",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "#test_workflow",
 				Users:      []string{"S-1-5-21-1234567890-1234567890-1234567890-1001"},
 			},
@@ -38,7 +38,7 @@ func TestValidateExecutionRequestV1(t *testing.T) {
 		},
 		{
 			name: "empty workflow ID",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "",
 				Devices:    []string{"device-001"},
 			},
@@ -47,7 +47,7 @@ func TestValidateExecutionRequestV1(t *testing.T) {
 		},
 		{
 			name: "no devices or users",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "#test_workflow",
 			},
 			wantErr: true,
@@ -57,7 +57,7 @@ func TestValidateExecutionRequestV1(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ValidateExecutionRequestV1(tt.req)
+			err := ValidateTriggerWorkflowV1Request(tt.req)
 			if tt.wantErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -68,16 +68,16 @@ func TestValidateExecutionRequestV1(t *testing.T) {
 	}
 }
 
-func TestValidateExecutionRequestV2(t *testing.T) {
+func TestValidateTriggerWorkflowV2Request(t *testing.T) {
 	tests := []struct {
 		name    string
-		req     *ExecutionRequestV2
+		req     *TriggerWorkflowV2Request
 		wantErr bool
 		errMsg  string
 	}{
 		{
 			name: "valid request with devices",
-			req: &ExecutionRequestV2{
+			req: &TriggerWorkflowV2Request{
 				WorkflowID: "#test_workflow",
 				Devices: []DeviceData{
 					{Name: "DESKTOP-001"},
@@ -87,7 +87,7 @@ func TestValidateExecutionRequestV2(t *testing.T) {
 		},
 		{
 			name: "valid request with users",
-			req: &ExecutionRequestV2{
+			req: &TriggerWorkflowV2Request{
 				WorkflowID: "#test_workflow",
 				Users: []UserData{
 					{SID: "S-1-5-21-1234567890-1234567890-1234567890-1001"},
@@ -105,7 +105,7 @@ func TestValidateExecutionRequestV2(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ValidateExecutionRequestV2(tt.req)
+			err := ValidateTriggerWorkflowV2Request(tt.req)
 			if tt.wantErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)

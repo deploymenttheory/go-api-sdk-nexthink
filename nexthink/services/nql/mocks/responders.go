@@ -21,12 +21,12 @@ func NewNQLMock(baseURL string) *NQLMock {
 
 // RegisterMocks registers all successful response mocks
 func (m *NQLMock) RegisterMocks() {
-	m.RegisterExecuteV1Mock()
-	m.RegisterExecuteV2Mock()
-	m.RegisterStartExportMock()
-	m.RegisterGetExportStatusSubmittedMock()
-	m.RegisterGetExportStatusCompletedMock()
-	m.RegisterGetExportStatusErrorMock()
+	m.RegisterExecuteNQLV1Mock()
+	m.RegisterExecuteNQLV2Mock()
+	m.RegisterStartNQLExportMock()
+	m.RegisterGetNQLExportStatusSubmittedMock()
+	m.RegisterGetNQLExportStatusCompletedMock()
+	m.RegisterGetNQLExportStatusErrorMock()
 }
 
 // RegisterErrorMocks registers all error response mocks
@@ -34,8 +34,8 @@ func (m *NQLMock) RegisterErrorMocks() {
 	m.RegisterUnauthorizedErrorMock()
 }
 
-// RegisterExecuteV1Mock registers the mock for ExecuteV1
-func (m *NQLMock) RegisterExecuteV1Mock() {
+// RegisterExecuteNQLV1Mock registers the mock for ExecuteNQLV1
+func (m *NQLMock) RegisterExecuteNQLV1Mock() {
 	httpmock.RegisterResponder(
 		"POST",
 		m.baseURL+"/api/v1/nql/execute",
@@ -48,8 +48,8 @@ func (m *NQLMock) RegisterExecuteV1Mock() {
 	)
 }
 
-// RegisterExecuteV2Mock registers the mock for ExecuteV2
-func (m *NQLMock) RegisterExecuteV2Mock() {
+// RegisterExecuteNQLV2Mock registers the mock for ExecuteNQLV2
+func (m *NQLMock) RegisterExecuteNQLV2Mock() {
 	httpmock.RegisterResponder(
 		"POST",
 		m.baseURL+"/api/v2/nql/execute",
@@ -62,8 +62,8 @@ func (m *NQLMock) RegisterExecuteV2Mock() {
 	)
 }
 
-// RegisterStartExportMock registers the mock for StartExport
-func (m *NQLMock) RegisterStartExportMock() {
+// RegisterStartNQLExportMock registers the mock for StartNQLExport
+func (m *NQLMock) RegisterStartNQLExportMock() {
 	httpmock.RegisterResponder(
 		"POST",
 		m.baseURL+"/api/v1/nql/export",
@@ -76,8 +76,8 @@ func (m *NQLMock) RegisterStartExportMock() {
 	)
 }
 
-// RegisterGetExportStatusSubmittedMock registers the mock for GetExportStatus (submitted)
-func (m *NQLMock) RegisterGetExportStatusSubmittedMock() {
+// RegisterGetNQLExportStatusSubmittedMock registers the mock for GetNQLExportStatus (submitted)
+func (m *NQLMock) RegisterGetNQLExportStatusSubmittedMock() {
 	httpmock.RegisterResponder(
 		"GET",
 		m.baseURL+"/api/v1/nql/status/export-123-abc",
@@ -90,8 +90,8 @@ func (m *NQLMock) RegisterGetExportStatusSubmittedMock() {
 	)
 }
 
-// RegisterGetExportStatusCompletedMock registers the mock for GetExportStatus (completed)
-func (m *NQLMock) RegisterGetExportStatusCompletedMock() {
+// RegisterGetNQLExportStatusCompletedMock registers the mock for GetNQLExportStatus (completed)
+func (m *NQLMock) RegisterGetNQLExportStatusCompletedMock() {
 	httpmock.RegisterResponder(
 		"GET",
 		m.baseURL+"/api/v1/nql/status/export-456-def",
@@ -104,8 +104,8 @@ func (m *NQLMock) RegisterGetExportStatusCompletedMock() {
 	)
 }
 
-// RegisterGetExportStatusErrorMock registers the mock for GetExportStatus (error)
-func (m *NQLMock) RegisterGetExportStatusErrorMock() {
+// RegisterGetNQLExportStatusErrorMock registers the mock for GetNQLExportStatus (error)
+func (m *NQLMock) RegisterGetNQLExportStatusErrorMock() {
 	httpmock.RegisterResponder(
 		"GET",
 		m.baseURL+"/api/v1/nql/status/export-789-ghi",

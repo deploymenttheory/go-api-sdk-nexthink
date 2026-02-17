@@ -51,7 +51,7 @@ func setupMockClient(t *testing.T) (*Service, string) {
 	return NewService(transport), baseURL
 }
 
-func TestExecuteV1_Success(t *testing.T) {
+func TestExecuteNQLV1_Success(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
@@ -60,7 +60,7 @@ func TestExecuteV1_Success(t *testing.T) {
 		QueryID: "#test_query",
 	}
 
-	result, resp, err := service.ExecuteV1(context.Background(), req)
+	result, resp, err := service.ExecuteNQLV1(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -72,7 +72,7 @@ func TestExecuteV1_Success(t *testing.T) {
 	assert.NotNil(t, result.ExecutionDateTime)
 }
 
-func TestExecuteV1_WithPlatform(t *testing.T) {
+func TestExecuteNQLV1_WithPlatform(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
@@ -82,7 +82,7 @@ func TestExecuteV1_WithPlatform(t *testing.T) {
 		Platform: "windows",
 	}
 
-	result, resp, err := service.ExecuteV1(context.Background(), req)
+	result, resp, err := service.ExecuteNQLV1(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -90,7 +90,7 @@ func TestExecuteV1_WithPlatform(t *testing.T) {
 	assert.Equal(t, "#test_query", result.QueryID)
 }
 
-func TestExecuteV2_Success(t *testing.T) {
+func TestExecuteNQLV2_Success(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
@@ -99,7 +99,7 @@ func TestExecuteV2_Success(t *testing.T) {
 		QueryID: "#test_query",
 	}
 
-	result, resp, err := service.ExecuteV2(context.Background(), req)
+	result, resp, err := service.ExecuteNQLV2(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -113,7 +113,7 @@ func TestExecuteV2_Success(t *testing.T) {
 	assert.IsType(t, map[string]any{}, result.Data[0])
 }
 
-func TestExecuteV2_WithPlatform(t *testing.T) {
+func TestExecuteNQLV2_WithPlatform(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
@@ -123,7 +123,7 @@ func TestExecuteV2_WithPlatform(t *testing.T) {
 		Platform: "windows",
 	}
 
-	result, resp, err := service.ExecuteV2(context.Background(), req)
+	result, resp, err := service.ExecuteNQLV2(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -131,7 +131,7 @@ func TestExecuteV2_WithPlatform(t *testing.T) {
 	assert.Equal(t, "#test_query", result.QueryID)
 }
 
-func TestExecuteV1_ValidationError(t *testing.T) {
+func TestExecuteNQLV1_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
 	tests := []struct {
@@ -162,14 +162,14 @@ func TestExecuteV1_ValidationError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, _, err := service.ExecuteV1(context.Background(), tt.req)
+			_, _, err := service.ExecuteNQLV1(context.Background(), tt.req)
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.errMsg)
 		})
 	}
 }
 
-func TestExecuteV2_ValidationError(t *testing.T) {
+func TestExecuteNQLV2_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
 	tests := []struct {
@@ -200,14 +200,14 @@ func TestExecuteV2_ValidationError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, _, err := service.ExecuteV2(context.Background(), tt.req)
+			_, _, err := service.ExecuteNQLV2(context.Background(), tt.req)
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.errMsg)
 		})
 	}
 }
 
-func TestStartExport_Success(t *testing.T) {
+func TestStartNQLExport_Success(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
@@ -217,7 +217,7 @@ func TestStartExport_Success(t *testing.T) {
 		Format:  ExportFormatCSV,
 	}
 
-	result, resp, err := service.StartExport(context.Background(), req)
+	result, resp, err := service.StartNQLExport(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -225,7 +225,7 @@ func TestStartExport_Success(t *testing.T) {
 	assert.NotEmpty(t, result.ExportID)
 }
 
-func TestStartExport_ValidationError(t *testing.T) {
+func TestStartNQLExport_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
 	tests := []struct {
@@ -257,19 +257,19 @@ func TestStartExport_ValidationError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, _, err := service.StartExport(context.Background(), tt.req)
+			_, _, err := service.StartNQLExport(context.Background(), tt.req)
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.errMsg)
 		})
 	}
 }
 
-func TestGetExportStatus_Submitted(t *testing.T) {
+func TestGetNQLExportStatus_Submitted(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	result, resp, err := service.GetExportStatus(context.Background(), "export-123-abc")
+	result, resp, err := service.GetNQLExportStatus(context.Background(), "export-123-abc")
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -278,12 +278,12 @@ func TestGetExportStatus_Submitted(t *testing.T) {
 	assert.Empty(t, result.ResultsFileURL)
 }
 
-func TestGetExportStatus_Completed(t *testing.T) {
+func TestGetNQLExportStatus_Completed(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	result, resp, err := service.GetExportStatus(context.Background(), "export-456-def")
+	result, resp, err := service.GetNQLExportStatus(context.Background(), "export-456-def")
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -292,12 +292,12 @@ func TestGetExportStatus_Completed(t *testing.T) {
 	assert.NotEmpty(t, result.ResultsFileURL)
 }
 
-func TestGetExportStatus_Error(t *testing.T) {
+func TestGetNQLExportStatus_Error(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	result, resp, err := service.GetExportStatus(context.Background(), "export-789-ghi")
+	result, resp, err := service.GetNQLExportStatus(context.Background(), "export-789-ghi")
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -306,16 +306,16 @@ func TestGetExportStatus_Error(t *testing.T) {
 	assert.NotEmpty(t, result.ErrorDescription)
 }
 
-func TestGetExportStatus_ValidationError(t *testing.T) {
+func TestGetNQLExportStatus_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
-	_, _, err := service.GetExportStatus(context.Background(), "")
+	_, _, err := service.GetNQLExportStatus(context.Background(), "")
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "export ID cannot be empty")
 }
 
-func TestDownloadExport_Success(t *testing.T) {
-	t.Skip("DownloadExport uses a separate HTTP client for S3 downloads which cannot be mocked in unit tests")
+func TestDownloadNQLExport_Success(t *testing.T) {
+	t.Skip("DownloadNQLExport uses a separate HTTP client for S3 downloads which cannot be mocked in unit tests")
 	
 	service, _ := setupMockClient(t)
 
@@ -326,26 +326,26 @@ func TestDownloadExport_Success(t *testing.T) {
 	httpmock.RegisterResponder("GET", s3URL,
 		httpmock.NewStringResponder(200, csvData))
 
-	data, err := service.DownloadExport(context.Background(), s3URL)
+	data, err := service.DownloadNQLExport(context.Background(), s3URL)
 
 	require.NoError(t, err)
 	assert.Equal(t, []byte(csvData), data)
 }
 
-func TestDownloadExport_EmptyURL(t *testing.T) {
+func TestDownloadNQLExport_EmptyURL(t *testing.T) {
 	service, _ := setupMockClient(t)
 
-	_, err := service.DownloadExport(context.Background(), "")
+	_, err := service.DownloadNQLExport(context.Background(), "")
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "download URL cannot be empty")
 }
 
-func TestWaitForExport_CompletesImmediately(t *testing.T) {
+func TestWaitForNQLExport_CompletesImmediately(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	result, err := service.WaitForExport(context.Background(), "export-456-def", time.Second, 10*time.Second)
+	result, err := service.WaitForNQLExport(context.Background(), "export-456-def", time.Second, 10*time.Second)
 
 	require.NoError(t, err)
 	require.NotNil(t, result)
@@ -353,24 +353,24 @@ func TestWaitForExport_CompletesImmediately(t *testing.T) {
 	assert.NotEmpty(t, result.ResultsFileURL)
 }
 
-func TestWaitForExport_Timeout(t *testing.T) {
+func TestWaitForNQLExport_Timeout(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	_, err := service.WaitForExport(context.Background(), "export-123-abc", 100*time.Millisecond, 500*time.Millisecond)
+	_, err := service.WaitForNQLExport(context.Background(), "export-123-abc", 100*time.Millisecond, 500*time.Millisecond)
 
 	require.Error(t, err)
 	// Context deadline exceeded is expected when timeout occurs during polling
 	assert.Contains(t, err.Error(), "context deadline exceeded")
 }
 
-func TestWaitForExport_Error(t *testing.T) {
+func TestWaitForNQLExport_Error(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewNQLMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	result, err := service.WaitForExport(context.Background(), "export-789-ghi", time.Second, 10*time.Second)
+	result, err := service.WaitForNQLExport(context.Background(), "export-789-ghi", time.Second, 10*time.Second)
 
 	require.NoError(t, err)
 	require.NotNil(t, result)
@@ -378,10 +378,10 @@ func TestWaitForExport_Error(t *testing.T) {
 	assert.NotEmpty(t, result.ErrorDescription)
 }
 
-func TestWaitForExport_ValidationError(t *testing.T) {
+func TestWaitForNQLExport_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
-	_, err := service.WaitForExport(context.Background(), "", time.Second, 10*time.Second)
+	_, err := service.WaitForNQLExport(context.Background(), "", time.Second, 10*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "export ID cannot be empty")
 }

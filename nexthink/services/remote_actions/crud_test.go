@@ -50,12 +50,12 @@ func setupMockClient(t *testing.T) (*Service, string) {
 	return NewService(transport), baseURL
 }
 
-func TestExecute_Success(t *testing.T) {
+func TestTriggerRemoteAction_Success(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewRemoteActionsMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	req := &ExecutionRequest{
+	req := &TriggerRemoteActionRequest{
 		RemoteActionID:   "#clear_browser_cache",
 		Devices:          []string{"device-001", "device-002"},
 		ExpiresInMinutes: 1440,
@@ -69,7 +69,7 @@ func TestExecute_Success(t *testing.T) {
 		},
 	}
 
-	result, resp, err := service.Execute(context.Background(), req)
+	result, resp, err := service.TriggerRemoteAction(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -78,12 +78,12 @@ func TestExecute_Success(t *testing.T) {
 	assert.Equal(t, 1440, result.ExpiresInMinutes)
 }
 
-func TestExecute_ValidationError(t *testing.T) {
+func TestTriggerRemoteAction_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
 	tests := []struct {
 		name   string
-		req    *ExecutionRequest
+		req    *TriggerRemoteActionRequest
 		errMsg string
 	}{
 		{
@@ -93,7 +93,7 @@ func TestExecute_ValidationError(t *testing.T) {
 		},
 		{
 			name: "empty remote action ID",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID: "",
 				Devices:        []string{"device-001"},
 			},
@@ -101,7 +101,7 @@ func TestExecute_ValidationError(t *testing.T) {
 		},
 		{
 			name: "no devices",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID: "#test_action",
 				Devices:        []string{},
 			},
@@ -109,7 +109,7 @@ func TestExecute_ValidationError(t *testing.T) {
 		},
 		{
 			name: "too many devices",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID: "#test_action",
 				Devices:        make([]string, 10001),
 			},
@@ -117,7 +117,7 @@ func TestExecute_ValidationError(t *testing.T) {
 		},
 		{
 			name: "invalid expires in minutes - too low",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID:   "#test_action",
 				Devices:          []string{"device-001"},
 				ExpiresInMinutes: 30,
@@ -126,7 +126,7 @@ func TestExecute_ValidationError(t *testing.T) {
 		},
 		{
 			name: "invalid expires in minutes - too high",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID:   "#test_action",
 				Devices:          []string{"device-001"},
 				ExpiresInMinutes: 20000,
@@ -135,7 +135,7 @@ func TestExecute_ValidationError(t *testing.T) {
 		},
 		{
 			name: "trigger info reason too long",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID: "#test_action",
 				Devices:        []string{"device-001"},
 				TriggerInfo: &TriggerInfoRequest{
@@ -148,7 +148,7 @@ func TestExecute_ValidationError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, _, err := service.Execute(context.Background(), tt.req)
+			_, _, err := service.TriggerRemoteAction(context.Background(), tt.req)
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.errMsg)
 		})

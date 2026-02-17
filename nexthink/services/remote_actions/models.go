@@ -1,7 +1,7 @@
 package remote_actions
 
-// ExecutionRequest represents the request to trigger a remote action
-type ExecutionRequest struct {
+// TriggerRemoteActionRequest represents the request to trigger a remote action
+type TriggerRemoteActionRequest struct {
 	// RemoteActionID is the ID of the remote action to execute
 	RemoteActionID string `json:"remoteActionId"`
 
@@ -30,8 +30,8 @@ type TriggerInfoRequest struct {
 	ExternalReference string `json:"externalReference,omitempty"`
 }
 
-// ExecutionResponse represents the response from triggering a remote action
-type ExecutionResponse struct {
+// TriggerRemoteActionResponse represents the response from triggering a remote action
+type TriggerRemoteActionResponse struct {
 	// RequestID is the Nexthink ID of the request created
 	// Use this ID to query remote action executions in NQL
 	RequestID string `json:"requestId"`

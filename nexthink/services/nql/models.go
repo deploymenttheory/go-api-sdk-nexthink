@@ -11,9 +11,9 @@ type ExecuteRequest struct {
 	Platform string `json:"platform,omitempty"`
 }
 
-// ExecuteV1Response represents the response from an NQL execute V1 operation
+// ExecuteNQLV1Response represents the response from an NQL execute V1 operation
 // API docs: https://docs.nexthink.com/api/nql/execute-an-nql
-type ExecuteV1Response struct {
+type ExecuteNQLV1Response struct {
 	// QueryID is the identifier of the executed query
 	QueryID string `json:"queryId,omitempty"`
 
@@ -33,9 +33,9 @@ type ExecuteV1Response struct {
 	Data [][]any `json:"data,omitempty"`
 }
 
-// ExecuteV2Response represents the response from an NQL execute V2 operation
+// ExecuteNQLV2Response represents the response from an NQL execute V2 operation
 // API docs: https://docs.nexthink.com/api/nql/execute-an-nql
-type ExecuteV2Response struct {
+type ExecuteNQLV2Response struct {
 	// QueryID is the identifier of the executed query
 	QueryID string `json:"queryId,omitempty"`
 
@@ -79,8 +79,8 @@ type ExportRequest struct {
 	Format string `json:"format,omitempty"`
 }
 
-// ExportResponse represents the initial response from starting an export
-type ExportResponse struct {
+// StartNQLExportResponse represents the initial response from starting an export
+type StartNQLExportResponse struct {
 	// ExportID is the unique identifier for this export operation
 	// Use this ID to check status and download the results
 	ExportID string `json:"exportId"`
@@ -92,8 +92,8 @@ type ExportResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-// ExportStatusResponse represents the status of an export operation
-type ExportStatusResponse struct {
+// NQLExportStatusResponse represents the status of an export operation
+type NQLExportStatusResponse struct {
 	// ExportID is the unique identifier for this export operation (not present in Python lib but useful)
 	ExportID string `json:"exportId,omitempty"`
 

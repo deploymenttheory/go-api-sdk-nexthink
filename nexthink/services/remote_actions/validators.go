@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// ValidateExecutionRequest validates an ExecutionRequest
-func ValidateExecutionRequest(req *ExecutionRequest) error {
+// ValidateTriggerRemoteActionRequest validates a TriggerRemoteActionRequest
+func ValidateTriggerRemoteActionRequest(req *TriggerRemoteActionRequest) error {
 	if req == nil {
 		return fmt.Errorf("execution request cannot be nil")
 	}

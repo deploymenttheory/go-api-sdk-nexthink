@@ -14,6 +14,18 @@
   - Refresh threshold set to 5 minutes before expiry to prevent mid-request expiration
   - Thread-safe token acquisition for concurrent requests
 
+### API Versioning
+- **Pattern**: Version in URL path
+- **URL Structure**: `https://{instance}.api.{region}.nexthink.cloud/api/{version}/{service}`
+- **Current Version**: `v1` + `v2` (Endpoint specific)
+- **Impact on Client**:
+  - API version embedded in endpoint paths
+  - Each service endpoint includes version prefix (e.g., `/api/v1/act/remote-actions`)
+  - Version is part of base URL construction
+  - No version negotiation via headers
+  - Future version changes require endpoint path updates
+  - Concurrent multi version support for the same endpoint exists.
+
 ### Query Model
 - **Pattern**: Pre-configured NQL queries referenced by ID
 - **Query ID Format**: `#query_name` (must start with #)

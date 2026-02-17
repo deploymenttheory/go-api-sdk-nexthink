@@ -50,12 +50,12 @@ func setupMockClient(t *testing.T) (*Service, string) {
 	return NewService(transport), baseURL
 }
 
-func TestExecuteV1_Success(t *testing.T) {
+func TestTriggerWorkflowV1_Success(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewWorkflowsMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	req := &ExecutionRequestV1{
+	req := &TriggerWorkflowV1Request{
 		WorkflowID: "#password_reset",
 		Devices:    []string{"device-001", "device-002"},
 		Users:      []string{"S-1-5-21-1234567890-1234567890-1234567890-1001"},
@@ -64,7 +64,7 @@ func TestExecuteV1_Success(t *testing.T) {
 		},
 	}
 
-	result, resp, err := service.ExecuteV1(context.Background(), req)
+	result, resp, err := service.TriggerWorkflowV1(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -73,12 +73,12 @@ func TestExecuteV1_Success(t *testing.T) {
 	assert.Len(t, result.ExecutionsUUIDs, 2)
 }
 
-func TestExecuteV2_Success(t *testing.T) {
+func TestTriggerWorkflowV2_Success(t *testing.T) {
 	service, baseURL := setupMockClient(t)
 	mockHandler := mocks.NewWorkflowsMock(baseURL)
 	mockHandler.RegisterMocks()
 
-	req := &ExecutionRequestV2{
+	req := &TriggerWorkflowV2Request{
 		WorkflowID: "#device_diagnostics",
 		Devices: []DeviceData{
 			{
@@ -94,7 +94,7 @@ func TestExecuteV2_Success(t *testing.T) {
 		},
 	}
 
-	result, resp, err := service.ExecuteV2(context.Background(), req)
+	result, resp, err := service.TriggerWorkflowV2(context.Background(), req)
 
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -103,12 +103,12 @@ func TestExecuteV2_Success(t *testing.T) {
 	assert.Len(t, result.ExecutionsUUIDs, 1)
 }
 
-func TestExecuteV1_ValidationError(t *testing.T) {
+func TestTriggerWorkflowV1_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
 	tests := []struct {
 		name   string
-		req    *ExecutionRequestV1
+		req    *TriggerWorkflowV1Request
 		errMsg string
 	}{
 		{
@@ -118,7 +118,7 @@ func TestExecuteV1_ValidationError(t *testing.T) {
 		},
 		{
 			name: "empty workflow ID",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "",
 				Devices:    []string{"device-001"},
 			},
@@ -126,14 +126,14 @@ func TestExecuteV1_ValidationError(t *testing.T) {
 		},
 		{
 			name: "no devices or users",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "#test_workflow",
 			},
 			errMsg: "at least one device or user must be provided",
 		},
 		{
 			name: "too many devices",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "#test_workflow",
 				Devices:    make([]string, 10001),
 			},
@@ -141,7 +141,7 @@ func TestExecuteV1_ValidationError(t *testing.T) {
 		},
 		{
 			name: "empty device ID",
-			req: &ExecutionRequestV1{
+			req: &TriggerWorkflowV1Request{
 				WorkflowID: "#test_workflow",
 				Devices:    []string{"device-001", ""},
 			},
@@ -151,19 +151,19 @@ func TestExecuteV1_ValidationError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, _, err := service.ExecuteV1(context.Background(), tt.req)
+			_, _, err := service.TriggerWorkflowV1(context.Background(), tt.req)
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.errMsg)
 		})
 	}
 }
 
-func TestExecuteV2_ValidationError(t *testing.T) {
+func TestTriggerWorkflowV2_ValidationError(t *testing.T) {
 	service, _ := setupMockClient(t)
 
 	tests := []struct {
 		name   string
-		req    *ExecutionRequestV2
+		req    *TriggerWorkflowV2Request
 		errMsg string
 	}{
 		{
@@ -173,7 +173,7 @@ func TestExecuteV2_ValidationError(t *testing.T) {
 		},
 		{
 			name: "empty workflow ID",
-			req: &ExecutionRequestV2{
+			req: &TriggerWorkflowV2Request{
 				WorkflowID: "",
 				Devices: []DeviceData{
 					{Name: "DESKTOP-001"},
@@ -183,7 +183,7 @@ func TestExecuteV2_ValidationError(t *testing.T) {
 		},
 		{
 			name: "device with no identifiers",
-			req: &ExecutionRequestV2{
+			req: &TriggerWorkflowV2Request{
 				WorkflowID: "#test_workflow",
 				Devices: []DeviceData{
 					{},
@@ -193,7 +193,7 @@ func TestExecuteV2_ValidationError(t *testing.T) {
 		},
 		{
 			name: "invalid device UID",
-			req: &ExecutionRequestV2{
+			req: &TriggerWorkflowV2Request{
 				WorkflowID: "#test_workflow",
 				Devices: []DeviceData{
 					{UID: "invalid-uuid"},
@@ -203,7 +203,7 @@ func TestExecuteV2_ValidationError(t *testing.T) {
 		},
 		{
 			name: "invalid user SID",
-			req: &ExecutionRequestV2{
+			req: &TriggerWorkflowV2Request{
 				WorkflowID: "#test_workflow",
 				Users: []UserData{
 					{SID: "invalid-sid"},
@@ -213,7 +213,7 @@ func TestExecuteV2_ValidationError(t *testing.T) {
 		},
 		{
 			name: "invalid user UPN",
-			req: &ExecutionRequestV2{
+			req: &TriggerWorkflowV2Request{
 				WorkflowID: "#test_workflow",
 				Users: []UserData{
 					{UPN: "not-an-email"},
@@ -225,7 +225,7 @@ func TestExecuteV2_ValidationError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, _, err := service.ExecuteV2(context.Background(), tt.req)
+			_, _, err := service.TriggerWorkflowV2(context.Background(), tt.req)
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.errMsg)
 		})

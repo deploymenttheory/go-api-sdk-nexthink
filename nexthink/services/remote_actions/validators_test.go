@@ -10,13 +10,13 @@ import (
 func TestValidateExecutionRequest(t *testing.T) {
 	tests := []struct {
 		name    string
-		req     *ExecutionRequest
+		req     *TriggerRemoteActionRequest
 		wantErr bool
 		errMsg  string
 	}{
 		{
-			name:    "valid request",
-			req: &ExecutionRequest{
+			name: "valid request",
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID:   "#test_action",
 				Devices:          []string{"device-001"},
 				ExpiresInMinutes: 1440,
@@ -31,7 +31,7 @@ func TestValidateExecutionRequest(t *testing.T) {
 		},
 		{
 			name: "empty remote action ID",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID: "",
 				Devices:        []string{"device-001"},
 			},
@@ -40,7 +40,7 @@ func TestValidateExecutionRequest(t *testing.T) {
 		},
 		{
 			name: "no devices",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID: "#test_action",
 				Devices:        []string{},
 			},
@@ -49,7 +49,7 @@ func TestValidateExecutionRequest(t *testing.T) {
 		},
 		{
 			name: "empty device ID",
-			req: &ExecutionRequest{
+			req: &TriggerRemoteActionRequest{
 				RemoteActionID: "#test_action",
 				Devices:        []string{"device-001", "", "device-003"},
 			},
@@ -60,7 +60,7 @@ func TestValidateExecutionRequest(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ValidateExecutionRequest(tt.req)
+			err := ValidateTriggerRemoteActionRequest(tt.req)
 			if tt.wantErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)

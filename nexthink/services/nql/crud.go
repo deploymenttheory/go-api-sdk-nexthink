@@ -15,7 +15,7 @@ type (
 	//
 	// Nexthink API docs: https://docs.nexthink.com/api/nql
 	NQLServiceInterface interface {
-		// ExecuteV1 executes an NQL query synchronously using API V1
+		// ExecuteNQLV1 executes an NQL query synchronously using API V1
 		//
 		// Executes a pre-configured NQL query and returns the results immediately.
 		// Optimized for relatively small requests at high frequency.
@@ -37,9 +37,9 @@ type (
 		//  - Frequent polling operations
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/nql/execute-an-nql
-		ExecuteV1(ctx context.Context, req *ExecuteRequest) (*ExecuteV1Response, *interfaces.Response, error)
+		ExecuteNQLV1(ctx context.Context, req *ExecuteRequest) (*ExecuteNQLV1Response, *interfaces.Response, error)
 
-		// ExecuteV2 executes an NQL query synchronously using API V2
+		// ExecuteNQLV2 executes an NQL query synchronously using API V2
 		//
 		// Executes a pre-configured NQL query and returns the results immediately.
 		// Optimized for relatively small requests at high frequency.
@@ -62,9 +62,9 @@ type (
 		//  - Frequent polling operations
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/nql/execute-an-nql
-		ExecuteV2(ctx context.Context, req *ExecuteRequest) (*ExecuteV2Response, *interfaces.Response, error)
+		ExecuteNQLV2(ctx context.Context, req *ExecuteRequest) (*ExecuteNQLV2Response, *interfaces.Response, error)
 
-		// StartExport starts an asynchronous NQL export
+		// StartNQLExport starts an asynchronous NQL export
 		//
 		// Initiates an export for a pre-configured NQL query.
 		// Optimized for large queries at low frequency.
@@ -73,7 +73,7 @@ type (
 		// and identified by its Query ID (format: #query_name).
 		//
 		// This is an asynchronous operation that returns an exportID immediately.
-		// Use GetExportStatus() to check completion and get the download URL.
+		// Use GetNQLExportStatus() to check completion and get the download URL.
 		//
 		// Use this for:
 		//  - Large data extracts
@@ -81,11 +81,11 @@ type (
 		//  - Bulk data exports
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/nql/export-an-nql
-		StartExport(ctx context.Context, req *ExportRequest) (*ExportResponse, *interfaces.Response, error)
+		StartNQLExport(ctx context.Context, req *ExportRequest) (*StartNQLExportResponse, *interfaces.Response, error)
 
-		// GetExportStatus checks the status of an export operation
+		// GetNQLExportStatus checks the status of an export operation
 		//
-		// Retrieves the current status of an export initiated with StartExport().
+		// Retrieves the current status of an export initiated with StartNQLExport().
 		//
 		// Status values:
 		//  - SUBMITTED: Export is queued
@@ -94,34 +94,34 @@ type (
 		//  - ERROR: Export failed (ErrorDescription will contain error details)
 		//
 		// When status is COMPLETED, the response includes a ResultsFileURL (S3 URL)
-		// that can be used with DownloadExport().
+		// that can be used with DownloadNQLExport().
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/nql/export-an-nql#status-of-an-export
-		GetExportStatus(ctx context.Context, exportID string) (*ExportStatusResponse, *interfaces.Response, error)
+		GetNQLExportStatus(ctx context.Context, exportID string) (*NQLExportStatusResponse, *interfaces.Response, error)
 
-		// DownloadExport downloads a completed export from the S3 URL
+		// DownloadNQLExport downloads a completed export from the S3 URL
 		//
-		// Downloads the export data from the S3 URL provided in GetExportStatus().
+		// Downloads the export data from the S3 URL provided in GetNQLExportStatus().
 		// Only works when export status is COMPLETED.
 		//
 		// The download URL typically expires after a certain time period.
 		//
 		// Returns the raw export data as bytes (CSV or JSON format).
-		DownloadExport(ctx context.Context, downloadURL string) ([]byte, error)
+		DownloadNQLExport(ctx context.Context, downloadURL string) ([]byte, error)
 
-		// WaitForExport polls the export status until it completes or fails
+		// WaitForNQLExport polls the export status until it completes or fails
 		//
-		// This is a convenience method that polls GetExportStatus() at regular intervals
+		// This is a convenience method that polls GetNQLExportStatus() at regular intervals
 		// until the export reaches a terminal state (COMPLETED or ERROR).
 		//
 		// Parameters:
 		//  - ctx: Context for cancellation
-		//  - exportID: The export ID from StartExport()
+		//  - exportID: The export ID from StartNQLExport()
 		//  - pollInterval: How often to check status (recommended: 5-10 seconds)
 		//  - timeout: Maximum time to wait (recommended: 5-10 minutes)
 		//
 		// Returns the final status response when export completes or an error if it fails.
-		WaitForExport(ctx context.Context, exportID string, pollInterval, timeout time.Duration) (*ExportStatusResponse, error)
+		WaitForNQLExport(ctx context.Context, exportID string, pollInterval, timeout time.Duration) (*NQLExportStatusResponse, error)
 	}
 
 	// Service implements the NQLServiceInterface
@@ -143,10 +143,10 @@ func NewService(client interfaces.HTTPClient) *Service {
 // NQL Execute Operations
 // =============================================================================
 
-// ExecuteV1 executes an NQL query synchronously using API V1
+// ExecuteNQLV1 executes an NQL query synchronously using API V1
 // URL: POST https://instance.api.region.nexthink.cloud/api/v1/nql/execute
 // Nexthink API docs: https://docs.nexthink.com/api/nql/execute-an-nql
-func (s *Service) ExecuteV1(ctx context.Context, req *ExecuteRequest) (*ExecuteV1Response, *interfaces.Response, error) {
+func (s *Service) ExecuteNQLV1(ctx context.Context, req *ExecuteRequest) (*ExecuteNQLV1Response, *interfaces.Response, error) {
 	if err := ValidateExecuteRequest(req); err != nil {
 		return nil, nil, err
 	}
@@ -158,7 +158,7 @@ func (s *Service) ExecuteV1(ctx context.Context, req *ExecuteRequest) (*ExecuteV
 		"Content-Type": "application/json",
 	}
 
-	var result ExecuteV1Response
+	var result ExecuteNQLV1Response
 	resp, err := s.client.Post(ctx, endpoint, req, headers, &result)
 	if err != nil {
 		return nil, resp, err
@@ -167,10 +167,10 @@ func (s *Service) ExecuteV1(ctx context.Context, req *ExecuteRequest) (*ExecuteV
 	return &result, resp, nil
 }
 
-// ExecuteV2 executes an NQL query synchronously using API V2
+// ExecuteNQLV2 executes an NQL query synchronously using API V2
 // URL: POST https://instance.api.region.nexthink.cloud/api/v2/nql/execute
 // Nexthink API docs: https://docs.nexthink.com/api/nql/execute-an-nql
-func (s *Service) ExecuteV2(ctx context.Context, req *ExecuteRequest) (*ExecuteV2Response, *interfaces.Response, error) {
+func (s *Service) ExecuteNQLV2(ctx context.Context, req *ExecuteRequest) (*ExecuteNQLV2Response, *interfaces.Response, error) {
 	if err := ValidateExecuteRequest(req); err != nil {
 		return nil, nil, err
 	}
@@ -182,7 +182,7 @@ func (s *Service) ExecuteV2(ctx context.Context, req *ExecuteRequest) (*ExecuteV
 		"Content-Type": "application/json",
 	}
 
-	var result ExecuteV2Response
+	var result ExecuteNQLV2Response
 	resp, err := s.client.Post(ctx, endpoint, req, headers, &result)
 	if err != nil {
 		return nil, resp, err
@@ -195,10 +195,10 @@ func (s *Service) ExecuteV2(ctx context.Context, req *ExecuteRequest) (*ExecuteV
 // NQL Export Operations
 // =============================================================================
 
-// StartExport starts an asynchronous NQL export
+// StartNQLExport starts an asynchronous NQL export
 // URL: POST https://instance.api.region.nexthink.cloud/api/v1/nql/export
 // Nexthink API docs: https://docs.nexthink.com/api/nql/export-an-nql
-func (s *Service) StartExport(ctx context.Context, req *ExportRequest) (*ExportResponse, *interfaces.Response, error) {
+func (s *Service) StartNQLExport(ctx context.Context, req *ExportRequest) (*StartNQLExportResponse, *interfaces.Response, error) {
 	if err := ValidateExportRequest(req); err != nil {
 		return nil, nil, err
 	}
@@ -210,7 +210,7 @@ func (s *Service) StartExport(ctx context.Context, req *ExportRequest) (*ExportR
 		"Content-Type": "application/json",
 	}
 
-	var result ExportResponse
+	var result StartNQLExportResponse
 	resp, err := s.client.Post(ctx, endpoint, req, headers, &result)
 	if err != nil {
 		return nil, resp, err
@@ -219,10 +219,10 @@ func (s *Service) StartExport(ctx context.Context, req *ExportRequest) (*ExportR
 	return &result, resp, nil
 }
 
-// GetExportStatus checks the status of an export operation
+// GetNQLExportStatus checks the status of an export operation
 // URL: GET https://instance.api.region.nexthink.cloud/api/v1/nql/status/{exportId}
 // Nexthink API docs: https://docs.nexthink.com/api/nql/export-an-nql#status-of-an-export
-func (s *Service) GetExportStatus(ctx context.Context, exportID string) (*ExportStatusResponse, *interfaces.Response, error) {
+func (s *Service) GetNQLExportStatus(ctx context.Context, exportID string) (*NQLExportStatusResponse, *interfaces.Response, error) {
 	if err := ValidateExportID(exportID); err != nil {
 		return nil, nil, err
 	}
@@ -233,7 +233,7 @@ func (s *Service) GetExportStatus(ctx context.Context, exportID string) (*Export
 		"Accept": "application/json, text/csv",
 	}
 
-	var result ExportStatusResponse
+	var result NQLExportStatusResponse
 	resp, err := s.client.Get(ctx, endpoint, nil, headers, &result)
 	if err != nil {
 		return nil, resp, err
@@ -242,7 +242,7 @@ func (s *Service) GetExportStatus(ctx context.Context, exportID string) (*Export
 	return &result, resp, nil
 }
 
-// DownloadExport downloads a completed export from an S3 pre-signed URL.
+// DownloadNQLExport downloads a completed export from an S3 pre-signed URL.
 //
 // Note: This method uses a standard HTTP client (not the SDK transport) because:
 //   - S3 URLs are external to the Nexthink API
@@ -251,18 +251,16 @@ func (s *Service) GetExportStatus(ctx context.Context, exportID string) (*Export
 //   - The download is a simple GET request to AWS S3
 //
 // The HTTP client is configured with a 5-minute timeout for large downloads.
-func (s *Service) DownloadExport(ctx context.Context, downloadURL string) ([]byte, error) {
+func (s *Service) DownloadNQLExport(ctx context.Context, downloadURL string) ([]byte, error) {
 	if downloadURL == "" {
 		return nil, fmt.Errorf("download URL cannot be empty")
 	}
 
-	// Create an HTTP request for the S3 download
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create download request: %w", err)
 	}
 
-	// Use a standard HTTP client for S3 downloads (external to Nexthink API)
 	client := &http.Client{
 		Timeout: 5 * time.Minute,
 	}
@@ -285,8 +283,8 @@ func (s *Service) DownloadExport(ctx context.Context, downloadURL string) ([]byt
 	return data, nil
 }
 
-// WaitForExport polls the export status until it completes or fails
-func (s *Service) WaitForExport(ctx context.Context, exportID string, pollInterval, timeout time.Duration) (*ExportStatusResponse, error) {
+// WaitForNQLExport polls the export status until it completes or fails
+func (s *Service) WaitForNQLExport(ctx context.Context, exportID string, pollInterval, timeout time.Duration) (*NQLExportStatusResponse, error) {
 	if err := ValidateExportID(exportID); err != nil {
 		return nil, err
 	}
@@ -305,7 +303,7 @@ func (s *Service) WaitForExport(ctx context.Context, exportID string, pollInterv
 	ticker := time.NewTicker(pollInterval)
 	defer ticker.Stop()
 
-	status, _, err := s.GetExportStatus(timeoutCtx, exportID)
+	status, _, err := s.GetNQLExportStatus(timeoutCtx, exportID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get initial export status: %w", err)
 	}
@@ -320,7 +318,7 @@ func (s *Service) WaitForExport(ctx context.Context, exportID string, pollInterv
 			return status, fmt.Errorf("timeout waiting for export to complete after %v", timeout)
 
 		case <-ticker.C:
-			status, _, err = s.GetExportStatus(timeoutCtx, exportID)
+			status, _, err = s.GetNQLExportStatus(timeoutCtx, exportID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get export status: %w", err)
 			}

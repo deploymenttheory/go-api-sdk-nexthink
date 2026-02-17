@@ -11,7 +11,7 @@ type (
 	//
 	// Nexthink API docs: https://docs.nexthink.com/api/remote-actions/remote-actions-api
 	RemoteActionsServiceInterface interface {
-		// Execute triggers the execution of a remote action for a set of devices
+		// TriggerRemoteAction triggers the execution of a remote action for a set of devices
 		//
 		// Triggers a remote action to execute on specified devices identified by their Collector IDs.
 		// The remote action must be pre-configured in Nexthink and API-enabled.
@@ -26,7 +26,7 @@ type (
 		// Returns a RequestID that can be used to query remote action executions in NQL.
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/remote-actions/remote-actions-api#trigger-a-remote-action
-		Execute(ctx context.Context, req *ExecutionRequest) (*ExecutionResponse, *interfaces.Response, error)
+		TriggerRemoteAction(ctx context.Context, req *TriggerRemoteActionRequest) (*TriggerRemoteActionResponse, *interfaces.Response, error)
 
 		// ListRemoteActions retrieves all remote actions with their configuration information
 		//
@@ -66,14 +66,14 @@ func NewService(client interfaces.HTTPClient) *Service {
 }
 
 // =============================================================================
-// Execute Remote Action Operations
+// Trigger Remote Action Operations
 // =============================================================================
 
-// Execute triggers the execution of a remote action for a set of devices
+// TriggerRemoteAction triggers the execution of a remote action for a set of devices
 // URL: POST https://instance.api.region.nexthink.cloud/api/v1/act/execute
 // Nexthink API docs: https://docs.nexthink.com/api/remote-actions/remote-actions-api#trigger-a-remote-action
-func (s *Service) Execute(ctx context.Context, req *ExecutionRequest) (*ExecutionResponse, *interfaces.Response, error) {
-	if err := ValidateExecutionRequest(req); err != nil {
+func (s *Service) TriggerRemoteAction(ctx context.Context, req *TriggerRemoteActionRequest) (*TriggerRemoteActionResponse, *interfaces.Response, error) {
+	if err := ValidateTriggerRemoteActionRequest(req); err != nil {
 		return nil, nil, err
 	}
 
@@ -84,7 +84,7 @@ func (s *Service) Execute(ctx context.Context, req *ExecutionRequest) (*Executio
 		"Content-Type": "application/json",
 	}
 
-	var result ExecutionResponse
+	var result TriggerRemoteActionResponse
 	resp, err := s.client.Post(ctx, endpoint, req, headers, &result)
 	if err != nil {
 		return nil, resp, err

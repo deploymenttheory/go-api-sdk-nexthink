@@ -2,8 +2,8 @@ package workflows
 
 import "time"
 
-// ExecutionRequestV1 represents a V1 workflow execution request
-type ExecutionRequestV1 struct {
+// TriggerWorkflowV1Request represents a V1 workflow trigger request
+type TriggerWorkflowV1Request struct {
 	// WorkflowID is the ID of the workflow to execute
 	WorkflowID string `json:"workflowId"`
 
@@ -19,8 +19,8 @@ type ExecutionRequestV1 struct {
 	Params map[string]string `json:"params,omitempty"`
 }
 
-// ExecutionRequestV2 represents a V2 workflow execution request with external identifiers
-type ExecutionRequestV2 struct {
+// TriggerWorkflowV2Request represents a V2 workflow trigger request with external identifiers
+type TriggerWorkflowV2Request struct {
 	// WorkflowID is the ID of the workflow to execute
 	WorkflowID string `json:"workflowId"`
 
@@ -58,8 +58,8 @@ type UserData struct {
 	SID string `json:"sid,omitempty"`
 }
 
-// ExecutionResponse represents the response from executing a workflow
-type ExecutionResponse struct {
+// TriggerWorkflowResponse represents the response from triggering a workflow
+type TriggerWorkflowResponse struct {
 	// RequestUUID is the request ID
 	// Use this ID to query workflow executions in NQL (workflow.executions.request_id)
 	RequestUUID string `json:"requestUuid"`

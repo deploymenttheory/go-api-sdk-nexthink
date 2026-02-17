@@ -12,7 +12,7 @@ type (
 	//
 	// Nexthink API docs: https://docs.nexthink.com/api/workflows/trigger-a-workflow
 	WorkflowsServiceInterface interface {
-		// ExecuteV1 triggers a workflow execution using internal IDs (Collector IDs, SIDs)
+		// TriggerWorkflowV1 triggers a workflow execution using internal IDs (Collector IDs, SIDs)
 		//
 		// Triggers a workflow using Nexthink internal identifiers:
 		//  - Devices: Nexthink Collector IDs (max 10000)
@@ -21,9 +21,9 @@ type (
 		// Returns RequestUUID and ExecutionsUUIDs to track execution via NQL.
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/workflows/trigger-a-workflow#get-api-v1-workflows-details
-		ExecuteV1(ctx context.Context, req *ExecutionRequestV1) (*ExecutionResponse, *interfaces.Response, error)
+		TriggerWorkflowV1(ctx context.Context, req *TriggerWorkflowV1Request) (*TriggerWorkflowResponse, *interfaces.Response, error)
 
-		// ExecuteV2 triggers a workflow execution using external identifiers
+		// TriggerWorkflowV2 triggers a workflow execution using external identifiers
 		//
 		// Triggers a workflow using external identifiers:
 		//  - Devices: Names, UIDs, or Collector UIDs (max 10000)
@@ -32,7 +32,7 @@ type (
 		// Returns RequestUUID and ExecutionsUUIDs to track execution via NQL.
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/workflows/trigger-a-workflow#trigger-a-workflow-v2
-		ExecuteV2(ctx context.Context, req *ExecutionRequestV2) (*ExecutionResponse, *interfaces.Response, error)
+		TriggerWorkflowV2(ctx context.Context, req *TriggerWorkflowV2Request) (*TriggerWorkflowResponse, *interfaces.Response, error)
 
 		// ListWorkflows retrieves all workflows with their configurations
 		//
@@ -79,14 +79,14 @@ func NewService(client interfaces.HTTPClient) *Service {
 }
 
 // =============================================================================
-// Execute Workflow Operations
+// Trigger Workflow Operations
 // =============================================================================
 
-// ExecuteV1 triggers a workflow execution using internal IDs (Collector IDs, SIDs)
+// TriggerWorkflowV1 triggers a workflow execution using internal IDs (Collector IDs, SIDs)
 // URL: POST https://instance.api.region.nexthink.cloud/api/v1/workflows/execute
 // Nexthink API docs: https://docs.nexthink.com/api/workflows/trigger-a-workflow#trigger-a-workflow-v1
-func (s *Service) ExecuteV1(ctx context.Context, req *ExecutionRequestV1) (*ExecutionResponse, *interfaces.Response, error) {
-	if err := ValidateExecutionRequestV1(req); err != nil {
+func (s *Service) TriggerWorkflowV1(ctx context.Context, req *TriggerWorkflowV1Request) (*TriggerWorkflowResponse, *interfaces.Response, error) {
+	if err := ValidateTriggerWorkflowV1Request(req); err != nil {
 		return nil, nil, err
 	}
 
@@ -97,7 +97,7 @@ func (s *Service) ExecuteV1(ctx context.Context, req *ExecutionRequestV1) (*Exec
 		"Content-Type": "application/json",
 	}
 
-	var result ExecutionResponse
+	var result TriggerWorkflowResponse
 	resp, err := s.client.Post(ctx, endpoint, req, headers, &result)
 	if err != nil {
 		return nil, resp, err
@@ -106,11 +106,11 @@ func (s *Service) ExecuteV1(ctx context.Context, req *ExecutionRequestV1) (*Exec
 	return &result, resp, nil
 }
 
-// ExecuteV2 triggers a workflow execution using external identifiers
+// TriggerWorkflowV2 triggers a workflow execution using external identifiers
 // URL: POST https://instance.api.region.nexthink.cloud/api/v2/workflows/execute
 // Nexthink API docs: https://docs.nexthink.com/api/workflows/trigger-a-workflow#trigger-a-workflow-v2
-func (s *Service) ExecuteV2(ctx context.Context, req *ExecutionRequestV2) (*ExecutionResponse, *interfaces.Response, error) {
-	if err := ValidateExecutionRequestV2(req); err != nil {
+func (s *Service) TriggerWorkflowV2(ctx context.Context, req *TriggerWorkflowV2Request) (*TriggerWorkflowResponse, *interfaces.Response, error) {
+	if err := ValidateTriggerWorkflowV2Request(req); err != nil {
 		return nil, nil, err
 	}
 
@@ -121,7 +121,7 @@ func (s *Service) ExecuteV2(ctx context.Context, req *ExecutionRequestV2) (*Exec
 		"Content-Type": "application/json",
 	}
 
-	var result ExecutionResponse
+	var result TriggerWorkflowResponse
 	resp, err := s.client.Post(ctx, endpoint, req, headers, &result)
 	if err != nil {
 		return nil, resp, err
