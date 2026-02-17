@@ -1,0 +1,51 @@
+[
+  {
+    "id": "#password_reset",
+    "uuid": "f6g7h8i9-j0k1-2345-fghi-j56789012345",
+    "name": "Password Reset Workflow",
+    "description": "Automated password reset workflow for users",
+    "status": "ACTIVE",
+    "lastUpdateTime": "2024-01-15T10:30:00Z",
+    "triggerMethods": ["API", "MANUAL", "SCHEDULER"],
+    "versions": [
+      {
+        "versionNumber": 2,
+        "isActive": true
+      },
+      {
+        "versionNumber": 1,
+        "isActive": false
+      }
+    ]
+  },
+  {
+    "id": "#device_diagnostics",
+    "uuid": "g7h8i9j0-k1l2-3456-ghij-k67890123456",
+    "name": "Device Diagnostics",
+    "description": "Run diagnostics on devices",
+    "status": "ACTIVE",
+    "lastUpdateTime": "2024-02-01T14:20:00Z",
+    "triggerMethods": ["API", "MANUAL_MULTIPLE"],
+    "versions": [
+      {
+        "versionNumber": 1,
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "#inactive_workflow",
+    "uuid": "h8i9j0k1-l2m3-4567-hijk-l78901234567",
+    "name": "Inactive Workflow",
+    "description": "This workflow is inactive",
+    "status": "INACTIVE",
+    "lastUpdateTime": "2023-12-01T09:00:00Z",
+    "triggerMethods": ["API"],
+    "versions": [
+      {
+        "versionNumber": 1,
+        "isActive": false
+      }
+    ]
+  }
+]

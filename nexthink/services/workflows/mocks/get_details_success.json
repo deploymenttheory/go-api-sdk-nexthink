@@ -1,0 +1,19 @@
+{
+  "id": "#password_reset",
+  "uuid": "f6g7h8i9-j0k1-2345-fghi-j56789012345",
+  "name": "Password Reset Workflow",
+  "description": "Automated password reset workflow for users",
+  "status": "ACTIVE",
+  "lastUpdateTime": "2024-01-15T10:30:00Z",
+  "triggerMethods": ["API", "MANUAL", "SCHEDULER"],
+  "versions": [
+    {
+      "versionNumber": 2,
+      "isActive": true
+    },
+    {
+      "versionNumber": 1,
+      "isActive": false
+    }
+  ]
+}

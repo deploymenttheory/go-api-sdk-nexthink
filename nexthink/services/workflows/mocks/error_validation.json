@@ -1,0 +1,4 @@
+{
+  "code": "VALIDATION_ERROR",
+  "details": "Invalid request: workflow ID cannot be empty"
+}

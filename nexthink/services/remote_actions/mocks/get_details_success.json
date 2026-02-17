@@ -1,0 +1,43 @@
+{
+  "id": "#clear_browser_cache",
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "name": "Clear Browser Cache",
+  "description": "Clears the browser cache for Chrome, Firefox, and Edge",
+  "origin": "NEXTHINK",
+  "builtInContentVersion": "1.2.0",
+  "purpose": ["REMEDIATION"],
+  "targeting": {
+    "apiEnabled": true,
+    "manualEnabled": true,
+    "workflowEnabled": true,
+    "manualAllowMultipleDevices": true
+  },
+  "scriptInfo": {
+    "executionServiceDelegate": "COLLECTOR",
+    "runAs": "LOCAL_SYSTEM",
+    "timeoutSeconds": 300,
+    "hasScriptWindows": true,
+    "hasScriptMacOs": true,
+    "inputs": [
+      {
+        "id": "browser",
+        "name": "Browser",
+        "description": "Select the browser to clear cache",
+        "usedByWindows": true,
+        "usedByMacOs": true,
+        "options": ["chrome", "firefox", "edge"],
+        "allowCustomValue": false
+      }
+    ],
+    "outputs": [
+      {
+        "id": "status",
+        "name": "Status",
+        "type": "string",
+        "description": "Execution status",
+        "usedByWindows": true,
+        "usedByMacOs": true
+      }
+    ]
+  }
+}

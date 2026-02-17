@@ -77,11 +77,11 @@ func GetRateLimitHeaders(resp *interfaces.Response) (limit, remaining, reset, re
 
 // validateResponse validates the HTTP response before processing
 // This includes checking for empty responses and validating Content-Type for JSON endpoints
-func (c *Client) validateResponse(resp *resty.Response, method, path string) error {
+func (t *Transport) validateResponse(resp *resty.Response, method, path string) error {
 	// Handle empty responses (204 No Content, etc.)
 	bodyLen := len(resp.String())
 	if resp.Header().Get("Content-Length") == "0" || bodyLen == 0 {
-		c.logger.Debug("Empty response received",
+		t.logger.Debug("Empty response received",
 			zap.String("method", method),
 			zap.String("path", path),
 			zap.Int("status_code", resp.StatusCode()))
@@ -97,7 +97,7 @@ func (c *Client) validateResponse(resp *resty.Response, method, path string) err
 
 		// Allow responses without Content-Type header (some endpoints don't set it)
 		if contentType != "" && !strings.HasPrefix(contentType, "application/json") {
-			c.logger.Warn("Unexpected Content-Type in response",
+			t.logger.Warn("Unexpected Content-Type in response",
 				zap.String("method", method),
 				zap.String("path", path),
 				zap.String("content_type", contentType),

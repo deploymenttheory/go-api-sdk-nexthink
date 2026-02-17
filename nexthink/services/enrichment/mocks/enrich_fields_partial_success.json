@@ -1,0 +1,22 @@
+{
+  "status": "partial_success",
+  "objects": [
+    {
+      "identification": {
+        "device/device/name": "DESKTOP-001"
+      },
+      "fields": {
+        "device/device/configuration_tag": "Production"
+      }
+    },
+    {
+      "identification": {
+        "device/device/name": "DESKTOP-002"
+      },
+      "error": {
+        "code": "OBJECT_NOT_FOUND",
+        "message": "Device not found in the system"
+      }
+    }
+  ]
+}

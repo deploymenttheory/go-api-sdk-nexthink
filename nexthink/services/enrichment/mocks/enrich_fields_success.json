@@ -1,0 +1,23 @@
+{
+  "status": "success",
+  "objects": [
+    {
+      "identification": {
+        "device/device/name": "DESKTOP-001"
+      },
+      "fields": {
+        "device/device/configuration_tag": "Production",
+        "device/device/virtualization/type": "physical"
+      }
+    },
+    {
+      "identification": {
+        "device/device/uid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      },
+      "fields": {
+        "device/device/configuration_tag": "Development",
+        "device/device/virtualization/type": "vmware"
+      }
+    }
+  ]
+}

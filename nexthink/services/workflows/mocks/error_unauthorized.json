@@ -1,0 +1,4 @@
+{
+  "code": "UNAUTHORIZED",
+  "details": "Invalid or expired authentication token"
+}

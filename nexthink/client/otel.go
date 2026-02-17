@@ -48,13 +48,13 @@ func DefaultOTelConfig() *OTelConfig {
 // - Request/response timing
 //
 // All spans follow OpenTelemetry semantic conventions for HTTP clients.
-func (c *Client) EnableTracing(config *OTelConfig) error {
+func (t *Transport) EnableTracing(config *OTelConfig) error {
 	if config == nil {
 		config = DefaultOTelConfig()
 	}
 
 	// Get the underlying HTTP client from resty
-	httpClient := c.client.Client()
+	httpClient := t.client.Client()
 	if httpClient == nil {
 		return nil // No HTTP client to instrument
 	}
@@ -80,7 +80,7 @@ func (c *Client) EnableTracing(config *OTelConfig) error {
 	instrumentedTransport := otelhttp.NewTransport(transport, opts...)
 	httpClient.Transport = instrumentedTransport
 
-	c.logger.Info("OpenTelemetry tracing enabled",
+	t.logger.Info("OpenTelemetry tracing enabled",
 		zap.String("service_name", config.ServiceName))
 
 	return nil

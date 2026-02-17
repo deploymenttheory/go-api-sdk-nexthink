@@ -5,6 +5,9 @@ const (
 	// Replace {instance} and {region} in runtime
 	DefaultTokenURLTemplate = "https://%s-login.%s.nexthink.cloud/oauth2/default/v1/token"
 
+	// Token endpoint for OAuth2 authentication
+	EndpointToken = "/api/v1/token"
+
 	// DefaultAPIVersion is the API version
 	DefaultAPIVersion = "v1"
 
@@ -12,7 +15,8 @@ const (
 	UserAgentBase = "go-api-sdk-nexthink"
 
 	// DefaultTimeout is the default HTTP client timeout in seconds
-	DefaultTimeout = 120
+	// Increased to 300 seconds (5 minutes) to handle large NQL export operations
+	DefaultTimeout = 300
 
 	// MaxRetries is the maximum number of retries for failed requests
 	MaxRetries = 3

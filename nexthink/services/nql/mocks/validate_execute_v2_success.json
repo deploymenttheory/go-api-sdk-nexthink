@@ -1,0 +1,18 @@
+{
+  "queryId": "#test_query",
+  "executedQuery": "select device.name, device.os from devices",
+  "rows": 2,
+  "executionDateTime": "2024-01-15T14:30:45Z",
+  "data": [
+    {
+      "device.name": "Device1",
+      "device.os": "Windows 10",
+      "device.type": "Laptop"
+    },
+    {
+      "device.name": "Device2",
+      "device.os": "macOS",
+      "device.type": "Desktop"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+[
+  {
+    "id": "#clear_browser_cache",
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Clear Browser Cache",
+    "description": "Clears the browser cache for Chrome, Firefox, and Edge",
+    "origin": "NEXTHINK",
+    "builtInContentVersion": "1.2.0",
+    "purpose": ["REMEDIATION"],
+    "targeting": {
+      "apiEnabled": true,
+      "manualEnabled": true,
+      "workflowEnabled": true,
+      "manualAllowMultipleDevices": true
+    },
+    "scriptInfo": {
+      "executionServiceDelegate": "COLLECTOR",
+      "runAs": "LOCAL_SYSTEM",
+      "timeoutSeconds": 300,
+      "hasScriptWindows": true,
+      "hasScriptMacOs": true,
+      "inputs": [
+        {
+          "id": "browser",
+          "name": "Browser",
+          "description": "Select the browser to clear cache",
+          "usedByWindows": true,
+          "usedByMacOs": true,
+          "options": ["chrome", "firefox", "edge"],
+          "allowCustomValue": false
+        }
+      ],
+      "outputs": [
+        {
+          "id": "status",
+          "name": "Status",
+          "type": "string",
+          "description": "Execution status",
+          "usedByWindows": true,
+          "usedByMacOs": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "#collect_logs",
+    "uuid": "b2c3d4e5-f6g7-8901-bcde-f12345678901",
+    "name": "Collect System Logs",
+    "description": "Collects system logs for troubleshooting",
+    "origin": "CUSTOM",
+    "builtInContentVersion": "",
+    "purpose": ["DATA_COLLECTION"],
+    "targeting": {
+      "apiEnabled": true,
+      "manualEnabled": false,
+      "workflowEnabled": true,
+      "manualAllowMultipleDevices": false
+    },
+    "scriptInfo": {
+      "executionServiceDelegate": "COLLECTOR",
+      "runAs": "INTERACTIVE_USER",
+      "timeoutSeconds": 600,
+      "hasScriptWindows": true,
+      "hasScriptMacOs": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "logs",
+          "name": "Logs",
+          "type": "string",
+          "description": "Collected log data",
+          "usedByWindows": true,
+          "usedByMacOs": false
+        }
+      ]
+    }
+  }
+]

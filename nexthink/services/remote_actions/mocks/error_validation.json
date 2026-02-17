@@ -1,0 +1,4 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Invalid request: remote action ID cannot be empty"
+}

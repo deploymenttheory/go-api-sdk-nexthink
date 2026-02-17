@@ -12,6 +12,8 @@ import (
 )
 
 // AuthConfig holds authentication configuration for the Nexthink API
+//
+// Nexthink API docs: https://docs.nexthink.com/api/getting-authentication-token
 type AuthConfig struct {
 	// ClientID is the OAuth2 client ID
 	ClientID string
@@ -34,6 +36,8 @@ type AuthConfig struct {
 }
 
 // TokenResponse represents the OAuth2 token response
+//
+// Nexthink API docs: https://docs.nexthink.com/api/getting-authentication-token
 type TokenResponse struct {
 	TokenType   string `json:"token_type"`   // "Bearer"
 	ExpiresIn   int    `json:"expires_in"`   // Token lifetime in seconds (900 = 15 minutes)
@@ -42,6 +46,8 @@ type TokenResponse struct {
 }
 
 // TokenManager handles OAuth2 token lifecycle
+//
+// Nexthink API docs: https://docs.nexthink.com/api/getting-authentication-token
 type TokenManager struct {
 	authConfig    *AuthConfig
 	logger        *zap.Logger
@@ -171,7 +177,6 @@ func (tm *TokenManager) RefreshToken() (string, error) {
 		return "", fmt.Errorf("token request failed with status %d: %s", resp.StatusCode(), resp.String())
 	}
 
-	// Parse token response
 	var tokenResp TokenResponse
 	if err := json.Unmarshal([]byte(resp.String()), &tokenResp); err != nil {
 		tm.logger.Error("Failed to parse token response",
@@ -203,22 +208,22 @@ func (tm *TokenManager) InvalidateToken() {
 }
 
 // SetupAuthentication configures the resty client with OAuth2 bearer token authentication
+//
+// Nexthink API docs: https://docs.nexthink.com/api/getting-authentication-token
 func SetupAuthentication(client *resty.Client, authConfig *AuthConfig, logger *zap.Logger) (*TokenManager, error) {
 	if err := authConfig.Validate(); err != nil {
 		logger.Error("Authentication validation failed", zap.Error(err))
 		return nil, fmt.Errorf("authentication validation failed: %w", err)
 	}
 
-	// Create token manager
 	tokenManager := NewTokenManager(authConfig, client, logger)
 
-	// Get initial token
+	// Fetch initial token
 	token, err := tokenManager.RefreshToken()
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain initial access token: %w", err)
 	}
 
-	// Set up bearer token authentication
 	client.SetAuthToken(token)
 
 	// Add request middleware to ensure token is valid before each request
