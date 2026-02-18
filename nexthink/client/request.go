@@ -95,7 +95,6 @@ func (t *Transport) PostMultipart(ctx context.Context, path string, fileField st
 		SetContext(ctx).
 		SetResult(result)
 
-	// Set file field using SetMultipartFields with progress callback
 	if fileReader != nil && fileName != "" && fileField != "" {
 		multipartField := &resty.MultipartField{
 			Name:     fileField,
@@ -104,7 +103,6 @@ func (t *Transport) PostMultipart(ctx context.Context, path string, fileField st
 			FileSize: fileSize,
 		}
 
-		// Add progress callback if provided
 		if progressCallback != nil {
 			multipartField.ProgressCallback = func(progress resty.MultipartFieldProgress) {
 				progressCallback(progress.Name, progress.FileName, progress.Written, progress.FileSize)
@@ -114,7 +112,6 @@ func (t *Transport) PostMultipart(ctx context.Context, path string, fileField st
 		req.SetMultipartFields(multipartField)
 	}
 
-	// Set form fields using SetMultipartFormData for multipart requests
 	if len(formFields) > 0 {
 		req.SetMultipartFormData(formFields)
 	}
@@ -224,7 +221,7 @@ func (t *Transport) GetBytes(ctx context.Context, path string, queryParams map[s
 		return clientResp, nil, fmt.Errorf("bytes request failed: %w", err)
 	}
 
-	if resp.IsError() {
+	if IsResponseError(clientResp) {
 		return clientResp, nil, ParseErrorResponse(
 			[]byte(resp.String()),
 			resp.StatusCode(),
@@ -280,12 +277,11 @@ func (t *Transport) executeRequest(req *resty.Request, method, path string) (*in
 		return clientResp, fmt.Errorf("request failed: %w", err)
 	}
 
-	// Validate response before processing
 	if err := t.validateResponse(resp, method, path); err != nil {
 		return clientResp, err
 	}
 
-	if resp.IsError() {
+	if IsResponseError(clientResp) {
 		return clientResp, ParseErrorResponse(
 			[]byte(resp.String()),
 			resp.StatusCode(),

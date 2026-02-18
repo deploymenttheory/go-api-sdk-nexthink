@@ -169,7 +169,7 @@ func (tm *TokenManager) RefreshToken() (string, error) {
 		return "", fmt.Errorf("failed to request access token: %w", err)
 	}
 
-	if resp.IsError() {
+	if IsResponseError(toInterfaceResponse(resp)) {
 		tm.logger.Error("Token request failed",
 			zap.Int("status_code", resp.StatusCode()),
 			zap.String("status", resp.Status()),

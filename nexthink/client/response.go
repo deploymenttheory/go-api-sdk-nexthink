@@ -92,7 +92,7 @@ func (t *Transport) validateResponse(resp *resty.Response, method, path string) 
 	// Skip validation for:
 	// - Error responses (handled by error parser)
 	// - Endpoints that explicitly return non-JSON (download endpoints, etc.)
-	if !resp.IsError() && bodyLen > 0 {
+	if !IsResponseError(toInterfaceResponse(resp)) && bodyLen > 0 {
 		contentType := resp.Header().Get("Content-Type")
 
 		// Allow responses without Content-Type header (some endpoints don't set it)

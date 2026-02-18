@@ -27,7 +27,7 @@ type Transport struct {
 // NewTransport creates a new Nexthink API transport.
 // This is an internal function - users should use nexthink.NewClient() instead.
 func NewTransport(clientID, clientSecret, instance, region string, options ...ClientOption) (*Transport, error) {
-	// Validate transport configuration
+
 	if err := ValidateTransportConfig(clientID, clientSecret, instance, region); err != nil {
 		return nil, fmt.Errorf("invalid transport configuration: %w", err)
 	}
@@ -52,8 +52,8 @@ func NewTransport(clientID, clientSecret, instance, region string, options ...Cl
 	restyClient := resty.New()
 	restyClient.SetTimeout(DefaultTimeout * time.Second)
 	restyClient.SetRetryCount(MaxRetries)
-	restyClient.SetRetryWaitTime(RetryWaitTime * time.Second)
-	restyClient.SetRetryMaxWaitTime(RetryMaxWaitTime * time.Second)
+	restyClient.SetRetryWaitTime(time.Duration(RetryWaitTime) * time.Second)
+	restyClient.SetRetryMaxWaitTime(time.Duration(RetryMaxWaitTime) * time.Second)
 	restyClient.SetHeader("User-Agent", userAgent)
 	restyClient.SetHeader("Accept-Encoding", "gzip")
 
@@ -101,7 +101,6 @@ func NewTransport(clientID, clientSecret, instance, region string, options ...Cl
 	}
 	transport.tokenManager = tokenManager
 
-	// Set the BaseURL on the resty client
 	restyClient.SetBaseURL(transport.BaseURL)
 
 	logger.Info("Nexthink API transport created",
