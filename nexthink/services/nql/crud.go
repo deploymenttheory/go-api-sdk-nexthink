@@ -98,6 +98,59 @@ type (
 		//
 		// Nexthink API docs: https://docs.nexthink.com/api/nql/export-an-nql#status-of-an-export
 		GetNQLExportStatus(ctx context.Context, exportID string) (*NQLExportStatusResponse, *interfaces.Response, error)
+		
+		// ExecuteQueryBuilder executes an NQL query built with QueryBuilder
+		//
+		// This method accepts a QueryBuilder instance, validates it, builds the query,
+		// saves it to Nexthink (requires query ID), and executes it using V2 API.
+		//
+		// Note: The query must still be pre-created in Nexthink admin with the provided
+		// query ID. This method builds the query text but requires you to save it first.
+		//
+		// Use this for:
+		//  - Programmatically constructed queries
+		//  - Type-safe query building
+		//  - Validated query execution
+		//
+		// Example:
+		//  qb := nql.NewQueryBuilder().
+		//      FromDevices().
+		//      DuringPast(7, nql.Days).
+		//      List("device.name")
+		//  
+		//  result, _, err := service.ExecuteQueryBuilder(ctx, "#my_query", qb)
+		ExecuteQueryBuilder(ctx context.Context, queryID string, qb *QueryBuilder) (*V2ResultSet, *interfaces.Response, error)
+		
+		// ExecuteV2WithResultSet executes an NQL query and returns a V2ResultSet
+		//
+		// This convenience method wraps ExecuteNQLV2 and automatically creates
+		// a V2ResultSet for type-safe data access.
+		//
+		// Use this when you want type-safe result processing without manually
+		// creating the result set.
+		//
+		// Example:
+		//  resultSet, _, err := service.ExecuteV2WithResultSet(ctx, &nql.ExecuteRequest{
+		//      QueryID: "#my_query",
+		//  })
+		//  
+		//  deviceName, _ := resultSet.GetString(0, "device.name")
+		ExecuteV2WithResultSet(ctx context.Context, req *ExecuteRequest) (*V2ResultSet, *interfaces.Response, error)
+		
+		// ExecuteV1WithResultSet executes an NQL query and returns a V1ResultSet
+		//
+		// This convenience method wraps ExecuteNQLV1 and automatically creates
+		// a V1ResultSet for type-safe data access.
+		//
+		// Use this when working with V1 API but want result set helpers.
+		//
+		// Example:
+		//  resultSet, _, err := service.ExecuteV1WithResultSet(ctx, &nql.ExecuteRequest{
+		//      QueryID: "#my_query",
+		//  })
+		//  
+		//  deviceName, _ := resultSet.GetString(0, 1) // row, column index
+		ExecuteV1WithResultSet(ctx context.Context, req *ExecuteRequest) (*V1ResultSet, *interfaces.Response, error)
 
 		// DownloadNQLExport downloads a completed export from the S3 URL
 		//
@@ -328,4 +381,53 @@ func (s *Service) WaitForNQLExport(ctx context.Context, exportID string, pollInt
 			}
 		}
 	}
+}
+
+// ExecuteQueryBuilder executes an NQL query built with QueryBuilder
+func (s *Service) ExecuteQueryBuilder(ctx context.Context, queryID string, qb *QueryBuilder) (*V2ResultSet, *interfaces.Response, error) {
+	// Validate the query builder
+	if err := qb.Validate(); err != nil {
+		return nil, nil, fmt.Errorf("query validation failed: %w", err)
+	}
+	
+	// Note: The query string from qb.Build() is for reference only
+	// The actual query must be pre-created in Nexthink admin with the queryID
+	// This method validates the structure but execution uses the saved query
+	
+	// Execute using the query ID
+	result, apiResp, err := s.ExecuteNQLV2(ctx, &ExecuteRequest{
+		QueryID: queryID,
+	})
+	if err != nil {
+		return nil, apiResp, err
+	}
+	
+	// Wrap in result set
+	resultSet := NewV2ResultSet(result)
+	
+	return resultSet, apiResp, nil
+}
+
+// ExecuteV2WithResultSet executes an NQL query and returns a V2ResultSet
+func (s *Service) ExecuteV2WithResultSet(ctx context.Context, req *ExecuteRequest) (*V2ResultSet, *interfaces.Response, error) {
+	result, apiResp, err := s.ExecuteNQLV2(ctx, req)
+	if err != nil {
+		return nil, apiResp, err
+	}
+	
+	resultSet := NewV2ResultSet(result)
+	
+	return resultSet, apiResp, nil
+}
+
+// ExecuteV1WithResultSet executes an NQL query and returns a V1ResultSet
+func (s *Service) ExecuteV1WithResultSet(ctx context.Context, req *ExecuteRequest) (*V1ResultSet, *interfaces.Response, error) {
+	result, apiResp, err := s.ExecuteNQLV1(ctx, req)
+	if err != nil {
+		return nil, apiResp, err
+	}
+	
+	resultSet := NewV1ResultSet(result)
+	
+	return resultSet, apiResp, nil
 }

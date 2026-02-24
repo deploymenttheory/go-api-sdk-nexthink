@@ -31,11 +31,20 @@ The [examples directory](examples/nexthink/) contains complete working examples 
 - [Client with Structured Logging](examples/nexthink/_build_client/new_client_with_logger/main.go)
 
 ### NQL (Nexthink Query Language)
+
+#### Basic Operations
 - [Execute NQL Query V1](examples/nexthink/nql/ExecuteNQLV1/main.go)
 - [Execute NQL Query V2](examples/nexthink/nql/ExecuteNQLV2/main.go)
 - [Start NQL Export](examples/nexthink/nql/StartNQLExport/main.go)
 - [Get NQL Export Status](examples/nexthink/nql/GetNQLExportStatus/main.go)
 - [Wait for NQL Export (Full Workflow)](examples/nexthink/nql/WaitForNQLExport/main.go)
+
+#### Advanced Features
+- [Query Builder](examples/nexthink/nql/QueryBuilder/main.go) - Fluent API for building NQL queries
+- [Templates](examples/nexthink/nql/Templates/main.go) - Pre-built queries for common scenarios
+- [Result Set Processing](examples/nexthink/nql/ResultSetProcessing/main.go) - Type-safe data access and transformations
+- [Export Workflow](examples/nexthink/nql/ExportWorkflow/main.go) - Simplified large data exports
+- [Comprehensive Example](examples/nexthink/nql/ComprehensiveExample/main.go) - Full-featured example combining all enhancements
 
 ### Workflows
 - [Trigger Workflow V1](examples/nexthink/workflows/TriggerWorkflowV1/main.go)
@@ -65,6 +74,13 @@ Each example includes a complete `main.go` with comments explaining the code.
   - V1 and V2 query execution
   - Asynchronous export operations with status tracking
   - Automatic waiting and polling for export completion
+  - **Query Builder**: Fluent API for programmatic query construction
+  - **Query Templates**: Pre-built queries for common scenarios
+  - **Result Sets**: Type-safe data access and transformation helpers
+  - **Export Workflow**: Simplified large data exports with progress tracking
+  - **Data Model Constants**: Type-safe constants for tables, fields, and values
+  - **Query Validation**: Client-side validation before API execution
+  - **Metadata Extraction**: Detailed execution and performance metrics
 
 ### Automation and Orchestration
 
@@ -88,6 +104,138 @@ Each example includes a complete `main.go` with comments explaining the code.
   - Trigger campaigns with custom parameters
   - Multi-user campaign execution
   - Track campaign request status per user
+
+## NQL Enhancements
+
+The SDK includes comprehensive enhancements for working with NQL (Nexthink Query Language):
+
+### Query Builder
+
+Build NQL queries programmatically with a type-safe fluent API:
+
+```go
+import "github.com/deploymenttheory/go-api-sdk-nexthink/nexthink/services/nql"
+
+// Build a query using method chaining
+query := nql.NewQueryBuilder().
+    FromDevices().
+    DuringPast(7, nql.Days).
+    With("execution.crashes during past 7d").
+    WhereEquals("binary.name", "outlook.exe").
+    ComputeSum("total_crashes", "number_of_crashes").
+    List("device.name", "total_crashes").
+    SortDesc("total_crashes").
+    Limit(20).
+    Build()
+
+// Validate before use
+if err := qb.Validate(); err != nil {
+    log.Fatal(err)
+}
+```
+
+### Query Templates
+
+Use pre-built query templates for common scenarios:
+
+```go
+templates := nql.NewTemplates()
+
+// Get devices with crashes
+query := templates.DevicesWithCrashes("during past 7d", "outlook.exe")
+
+// Analyze DEX scores by platform
+query := templates.DEXScoreByPlatform("during past 24h")
+
+// Find users with low DEX scores
+query := templates.UsersWithLowDEXScore(50, "during past 24h")
+```
+
+### Result Set Processing
+
+Process query results with type-safe helpers:
+
+```go
+// Execute query
+result, apiResp, err := nqlService.ExecuteNQLV2(ctx, req)
+
+// Create result set
+resultSet := nql.NewV2ResultSet(result)
+
+// Type-safe data access
+deviceName, err := resultSet.GetString(0, "device.name")
+crashCount, err := resultSet.GetInt(0, "total_crashes")
+
+// Iterate through results
+resultSet.IterateRows(func(row int, data map[string]any) error {
+    fmt.Printf("Device: %v\n", data)
+    return nil
+})
+
+// Filter and transform
+windowsDevices := resultSet.Filter(func(row map[string]any) bool {
+    platform, _ := row["operating_system.platform"].(string)
+    return platform == "Windows"
+})
+
+// Convert to JSON
+jsonData, _ := resultSet.ToJSON()
+```
+
+### Export Workflow
+
+Simplified workflow for large data exports:
+
+```go
+// Simple CSV export
+result, err := nqlService.ExportToCSV(ctx, "#large_query")
+os.WriteFile("export.csv", result.Data, 0644)
+
+// Export with progress tracking
+opts := nql.DefaultExportOptions().
+    WithPollInterval(5 * time.Second).
+    WithTimeout(15 * time.Minute).
+    WithOnProgress(func(status string, elapsed time.Duration) {
+        fmt.Printf("[%v] %s\n", elapsed, status)
+    })
+
+result, err := nqlService.ExportWorkflow(ctx, req, opts)
+fmt.Printf("Exported %s in %v\n", result.SizeFormatted(), result.TotalDuration)
+```
+
+### Data Model Constants
+
+Use constants for type-safe query construction:
+
+```go
+// Table constants
+nql.TableDevices              // "devices"
+nql.TableExecutionCrashes     // "execution.crashes"
+nql.TableWebErrors            // "web.errors"
+
+// Field constants
+nql.FieldDeviceName           // "device.name"
+nql.FieldOSPlatform           // "operating_system.platform"
+nql.FieldHardwareType         // "hardware.type"
+
+// Value constants
+nql.PlatformWindows           // "Windows"
+nql.HardwareTypeLaptop        // "laptop"
+nql.ExperienceLevelGood       // "good"
+
+// Time selection helpers
+nql.Past7Days                 // "during past 7d"
+nql.Past24Hours               // "during past 24h"
+```
+
+### Comprehensive Documentation
+
+- **[NQL Query Building Guide](docs/guides/nql-query-building.md)** - Complete guide to the query builder
+- **[NQL Result Processing Guide](docs/guides/nql-result-processing.md)** - Working with query results
+- **[NQL Export Workflow Guide](docs/guides/nql-export-workflow.md)** - Large data exports
+- **[NQL Templates Guide](docs/guides/nql-templates.md)** - Pre-built query templates
+- **[NQL Best Practices Guide](docs/guides/nql-best-practices.md)** - Optimization and patterns
+- **[NQL API Reference](docs/reference/nql-reference.md)** - Complete API reference
 
 ## HTTP Client Configuration
 

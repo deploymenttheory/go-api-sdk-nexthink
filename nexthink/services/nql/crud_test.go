@@ -406,3 +406,87 @@ func TestIsTerminalStatus(t *testing.T) {
 		})
 	}
 }
+
+func TestExecuteQueryBuilder_Success(t *testing.T) {
+	service, baseURL := setupMockClient(t)
+	mockHandler := mocks.NewNQLMock(baseURL)
+	mockHandler.RegisterMocks()
+
+	qb := NewQueryBuilder().
+		FromDevices().
+		DuringPast(7, Days).
+		List("device.name")
+
+	result, resp, err := service.ExecuteQueryBuilder(context.Background(), "#test_query", qb)
+
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotNil(t, result)
+	assert.Equal(t, 2, result.Rows())
+}
+
+func TestExecuteQueryBuilder_ValidationError(t *testing.T) {
+	service, _ := setupMockClient(t)
+
+	// Invalid query builder (missing table)
+	qb := NewQueryBuilder().List("device.name")
+
+	_, _, err := service.ExecuteQueryBuilder(context.Background(), "#test_query", qb)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "query validation failed")
+}
+
+func TestExecuteV2WithResultSet_Success(t *testing.T) {
+	service, baseURL := setupMockClient(t)
+	mockHandler := mocks.NewNQLMock(baseURL)
+	mockHandler.RegisterMocks()
+
+	req := &ExecuteRequest{
+		QueryID: "#test_query",
+	}
+
+	resultSet, resp, err := service.ExecuteV2WithResultSet(context.Background(), req)
+
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotNil(t, resultSet)
+	assert.Equal(t, 2, resultSet.Rows())
+	assert.Equal(t, "#test_query", resultSet.QueryID)
+}
+
+func TestExecuteV2WithResultSet_ValidationError(t *testing.T) {
+	service, _ := setupMockClient(t)
+
+	_, _, err := service.ExecuteV2WithResultSet(context.Background(), nil)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "execute request cannot be nil")
+}
+
+func TestExecuteV1WithResultSet_Success(t *testing.T) {
+	service, baseURL := setupMockClient(t)
+	mockHandler := mocks.NewNQLMock(baseURL)
+	mockHandler.RegisterMocks()
+
+	req := &ExecuteRequest{
+		QueryID: "#test_query",
+	}
+
+	resultSet, resp, err := service.ExecuteV1WithResultSet(context.Background(), req)
+
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotNil(t, resultSet)
+	assert.Equal(t, 2, resultSet.Rows())
+	assert.Equal(t, "#test_query", resultSet.QueryID)
+}
+
+func TestExecuteV1WithResultSet_ValidationError(t *testing.T) {
+	service, _ := setupMockClient(t)
+
+	_, _, err := service.ExecuteV1WithResultSet(context.Background(), nil)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "execute request cannot be nil")
+}

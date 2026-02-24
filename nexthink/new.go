@@ -101,7 +101,6 @@ func NewClientFromEnv(options ...client.ClientOption) (*Client, error) {
 		return nil, fmt.Errorf("NEXTHINK_REGION environment variable is required")
 	}
 
-	// Check for optional environment variables and append to options
 	if baseURL := os.Getenv("NEXTHINK_BASE_URL"); baseURL != "" {
 		options = append(options, client.WithBaseURL(baseURL))
 	}
